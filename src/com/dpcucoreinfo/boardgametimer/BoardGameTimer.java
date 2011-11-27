@@ -29,11 +29,7 @@ public class BoardGameTimer extends Activity
 	private final int hurryUpTime = 10;
 
 
-	private void onStartCounting() {
-		timerRunning = true;
-		if (countdown() > hurryUpTime) {
-			mainLayout.setBackgroundColor(0xFF0000FF);
-		}
+	private void restartPlayer() {
 		if (player.isPlaying()) {
 			player.stop();
 			try {
@@ -43,6 +39,15 @@ public class BoardGameTimer extends Activity
 				// ignore
 			}
 		}
+	}
+
+	private void onStartCounting() {
+		timerRunning = true;
+		if (countdown() > hurryUpTime) {
+			mainLayout.setBackgroundColor(0xFF0000FF);
+		}
+
+		restartPlayer();
 		timer.cancel();
 		timer.start();
 	}
@@ -122,8 +127,6 @@ public class BoardGameTimer extends Activity
 		} else if (keycode == KeyEvent.KEYCODE_SEARCH) {
 			timer.cancel();
 			onStopCounting();
-		} else if (keycode == KeyEvent.KEYCODE_MENU && timerRunning) {
-			// this does not work, but I will leave it anyway
 		} else if (keycode == KeyEvent.KEYCODE_BACK && timerRunning) {
 			// just don't pass to system
 		} else {
@@ -161,4 +164,12 @@ public class BoardGameTimer extends Activity
 		}
 
 	}
+	@Override
+	protected void onStop() {
+		timer.cancel();
+		restartPlayer();
+		onStopCounting();
+		super.onStop();
+	}
+
 }
