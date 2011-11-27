@@ -1,0 +1,15 @@
+# Board Game Timer for Android
+
+## Introduction
+
+This projects implements handy countdown timer for Android.
+
+It has been written to help playing board games. It allows to put the phone on the
+table and start the countdown by simply taping the screen. Taping the screen
+while the timer is running restarts the countdown. There's no need for any
+additional buttons (like start/stop/pause/reset).
+
+## Author and License
+
+This project was started by Dawid Ciężarkiewicz <dpc@ucore.info> and is
+released  under GNU General Public License. See LICENSE file for more info.

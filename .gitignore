@@ -1,0 +1,4 @@
+bin/
+dpc.keystore
+gen/
+local.properties
