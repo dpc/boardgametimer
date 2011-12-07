@@ -15,6 +15,7 @@
 		android:text="Start!"
 		android:textStyle="bold"
 		android:textSize="80dip"
+		android:textColor="#FFFFFFFF"
 		/>
 
 	<TextView
@@ -23,6 +24,7 @@
 		android:layout_height="wrap_content"
 		android:text="Board Game Timer v0.1\nby http://dpc.ucore.info"
 		android:textSize="10dip"
+		android:textColor="#FFFFFFFF"
 		android:gravity="center"
 		android:padding="10dip"
 		android:layout_alignParentBottom="true" />
