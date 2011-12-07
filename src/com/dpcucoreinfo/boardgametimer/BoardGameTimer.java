@@ -27,6 +27,11 @@ public class BoardGameTimer extends Activity
 	private int countdownValues[] = { 5, 15, 30, 60, 120, 300};
 	private int countdownSelected = 2;
 	private final int hurryUpTime = 10;
+	private int backgroundWarn = 0xFFCC0000;
+	private int backgroundNormal = 0xFF0000;
+	private int backgroundRunning = 0xFF003399;
+	private int currentTimer = 0;
+	private int currentBackground = 0;
 
 
 	private void restartPlayer() {
@@ -44,7 +49,7 @@ public class BoardGameTimer extends Activity
 	private void onStartCounting() {
 		timerRunning = true;
 		if (countdown() > hurryUpTime) {
-			mainLayout.setBackgroundColor(0xFF0000FF);
+			updateBackgroundColor(backgroundRunning);
 		}
 
 		restartPlayer();
@@ -54,24 +59,25 @@ public class BoardGameTimer extends Activity
 
 	private void onStopCounting() {
 		timerRunning = false;
-		mainLayout.setBackgroundColor(0x000000);
+		updateBackgroundColor(backgroundNormal);
 		updateTimerText(countdown());
 
 	}
 
 	private void initTimer() {
-		timer = new CountDownTimer(countdown() * 1000, 50) {
+		timer = new CountDownTimer(countdown() * 1000, 250) {
 			public void onTick(long millisUntilFinished) {
+				int newTime = (int)((millisUntilFinished + 999) / 1000);
+				updateTimerText(newTime);
 				if (millisUntilFinished < 5 * 1000) {
-					if ((millisUntilFinished / 200) % 2 == 0) {
-						mainLayout.setBackgroundColor(0xFFFF0000);
+					if (((millisUntilFinished / 250) % 2) == 0) {
+						updateBackgroundColor(backgroundWarn);
 					} else {
-						mainLayout.setBackgroundColor(0xFF000000);
+						updateBackgroundColor(backgroundNormal);
 					}
 				} else if (millisUntilFinished < hurryUpTime * 1000) {
-					mainLayout.setBackgroundColor(0xFFFF0000);
+					updateBackgroundColor(backgroundWarn);
 				}
-				updateTimerText((int)((millisUntilFinished + 999) / 1000));
 			}
 
 			public void onFinish() {
@@ -91,7 +97,19 @@ public class BoardGameTimer extends Activity
 	};
 
 	private void updateTimerText(int sec) {
+		if (sec == currentTimer) {
+			return;
+		}
+		currentTimer = sec;
 		centralText.setText("" + sec);
+	}
+
+	private void updateBackgroundColor(int col) {
+		if (currentBackground == col) {
+			return;
+		}
+		currentBackground = col;
+		mainLayout.setBackgroundColor(col);
 	}
 
 	private int countdown() {
