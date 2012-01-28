@@ -6,6 +6,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.KeyEvent;
@@ -69,15 +70,8 @@ public class BoardGameTimer extends Activity
 			public void onTick(long millisUntilFinished) {
 				int newTime = (int)((millisUntilFinished + 999) / 1000);
 				updateTimerText(newTime);
-				if (millisUntilFinished < 5 * 1000) {
-					if (((millisUntilFinished / 250) % 2) == 0) {
-						updateBackgroundColor(backgroundWarn);
-					} else {
-						updateBackgroundColor(backgroundNormal);
-					}
-				} else if (millisUntilFinished < hurryUpTime * 1000) {
-					updateBackgroundColor(backgroundWarn);
-				}
+				updateTimerBackground(millisUntilFinished);
+
 			}
 
 			public void onFinish() {
@@ -100,14 +94,35 @@ public class BoardGameTimer extends Activity
 		if (sec == currentTimer) {
 			return;
 		}
+		updateTimerTextUnconditionally(sec);
+	}
+
+	private void updateTimerTextUnconditionally(int sec) {
 		currentTimer = sec;
 		centralText.setText("" + sec);
 	}
 
+	private void updateTimerBackground(long msec) {
+		if (msec < 5 * 1000) {
+			if (((msec / 250) % 2) == 0) {
+				updateBackgroundColor(backgroundWarn);
+			} else {
+				updateBackgroundColor(backgroundNormal);
+			}
+		} else if (msec < hurryUpTime * 1000) {
+			updateBackgroundColor(backgroundWarn);
+		} else {
+			updateBackgroundColor(backgroundRunning);
+		}
+
+	}
 	private void updateBackgroundColor(int col) {
 		if (currentBackground == col) {
 			return;
 		}
+		updateBackgroundColorUnconditionally(col);
+	}
+	private void updateBackgroundColorUnconditionally(int col) {
 		currentBackground = col;
 		mainLayout.setBackgroundColor(col);
 	}
@@ -153,6 +168,11 @@ public class BoardGameTimer extends Activity
 		return true;
 	}
 
+	private void initUI() {
+		centralText = (TextView) findViewById(R.id.CentralText);
+		mainLayout = (RelativeLayout) findViewById(R.id.MainLayout);
+		mainLayout.setOnTouchListener(touchListener);
+	}
 
 	/** Called when the activity is first created. */
 	@Override
@@ -161,13 +181,12 @@ public class BoardGameTimer extends Activity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
+		initUI();
+
+
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-		centralText = (TextView) findViewById(R.id.CentralText);
-		mainLayout = (RelativeLayout) findViewById(R.id.MainLayout);
-		mainLayout.setOnTouchListener(touchListener);
 
-		updateTimerText(countdown());
 		initTimer();
 
 		audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
@@ -182,6 +201,17 @@ public class BoardGameTimer extends Activity
 		}
 
 	}
+	@Override
+	public void onConfigurationChanged(Configuration newConfig)
+	{
+		super.onConfigurationChanged(newConfig);
+		setContentView(R.layout.main);
+
+		initUI();
+		updateTimerTextUnconditionally(countdown());
+		updateBackgroundColorUnconditionally(currentBackground);
+	}
+
 	@Override
 	protected void onStop() {
 		timer.cancel();
